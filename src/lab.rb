@@ -1,19 +1,12 @@
-require 'typhoeus'
-require 'pry'
-require 'json'
-require 'ox'
-require 'csv'
+require './helper.rb'
 
-def parse_response(response, type)
-  if type == "Application/json"
-    return JSON.parse(response)
-  elsif type == "Application/xml"
-    return Ox.load(response, mode: :hash)[:device].inject(:merge)
-  elsif type == "text/csv"
-    CSV.parse(response, headers: :first_row).map(&:to_h)
-  end
-end
-
+devices = {
+  "0" => "Temperature",
+  "1" => "Humidity",
+  "2" => "Motion",
+  "3" => "Alien Presence",
+  "4" => "Dark Matter"
+}
 
 URL = "https://desolate-ravine-43301.herokuapp.com"
 
@@ -42,10 +35,20 @@ responses = requests.map { |request|
   parsed_response = parse_response(request.response.body, request.response.headers["Content-Type"])
 }
 
-responses.flatten.each do |response|
-  unless response == nil
-    response.keys.each do |key|
-      response[(key.to_sym rescue key) || key] = response.delete(key)
+responses.delete(nil)
+
+responses = keys_to_symbols(responses.flatten)
+responses = standartize_keys(responses)
+responses = standartize_values(responses)
+
+grouped_responses = responses.group_by { |k| k[:sensor_type] }
+
+grouped_responses.each do |key, value|
+  if devices.key?(key)
+    puts devices[key] + "\n"
+    value.each do |device|
+      puts "Device " + device[:device_id] + " - " + device[:value]
     end
+    puts "\n"
   end
 end
