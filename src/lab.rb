@@ -1,4 +1,4 @@
-require './helper.rb'
+require './src/helper.rb'
 
 devices = {
   "0" => "Temperature",
