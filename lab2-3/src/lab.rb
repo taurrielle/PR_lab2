@@ -10,7 +10,7 @@ devices = {
 
 URL = "https://desolate-ravine-43301.herokuapp.com"
 
-response = Typhoeus.post(URL, body: {})
+response = Typhoeus.post(URL)
 
 secret_key = response.headers["Session"]
 urls = JSON.parse(response.body)
