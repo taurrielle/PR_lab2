@@ -1,5 +1,6 @@
 require 'socket'
 require 'pry'
+require 'levenshtein'
 
 class Server
   def initialize(socket_port, socket_address)
@@ -10,6 +11,14 @@ class Server
       "/time_now"     => method(:time_now),
       "/generate_num" => method(:generate_num),
       "/coin_flip"    => method(:coin_flip)
+    }
+
+    @commands_info = {
+      "/hello <param>"                  => "Prints 'Hello <param>'",
+      "/time_now"                       => "Prints the current time",
+      "/generate_num <param1> <param2>" => "Prints a randomly generated number between the two <param> values",
+      "/flip_cpin"                      => "Prints the result of flipping a coin",
+      "/help"                           => "Prints all the supported commands"
     }
 
     puts "Started server.........\n"
@@ -32,6 +41,8 @@ class Server
             else
               conn.puts(@commands[command].call(params))
             end
+          else
+            conn.puts(check_command(command))
           end
         end
       end
@@ -40,17 +51,17 @@ class Server
 
   private
 
-  def help_command
-    commands_description = {
-      "/hello <param>"                  => "Prints 'Hello <param>'",
-      "/time_now"                       => "Prints the current time",
-      "/generate_num <param1> <param2>" => "Prints a randomly generated number between the two <param> values",
-      "/flip_cpin"                      => "Prints the result of flipping a coin",
-      "/help"                           => "Prints all the supported commands"
-    }
+  def check_command(command)
+    @commands.each_key do |cmd|
+      if Levenshtein.distance(command, cmd) <= 2
+        return "Undefined command '#{command}'.\nDid you mean? #{cmd}"
+      end
+    end
+  end
 
+  def help_command
     result = "\n"
-    commands_description.each do |key, value|
+    @commands_info.each do |key, value|
       result << "#{key.ljust(30)}##{value}\n"
     end
     result
