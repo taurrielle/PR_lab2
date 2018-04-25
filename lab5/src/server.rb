@@ -20,8 +20,9 @@ class Server
       "/hello <param>"                  => "Prints 'Hello <param>'",
       "/time_now"                       => "Prints the current time",
       "/generate_num <param1> <param2>" => "Prints a randomly generated number between the two <param> values",
-      "/flip_cpin"                      => "Prints the result of flipping a coin",
-      "/help"                           => "Prints all the supported commands"
+      "/coin_flip"                      => "Prints the result of flipping a coin",
+      "/help"                           => "Prints all the supported commands",
+      "/get_file"                       => "Saves a file from server in the current directory"
     }
 
     puts "Started server.........\n"
