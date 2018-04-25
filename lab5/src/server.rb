@@ -1,6 +1,8 @@
 require 'socket'
 require 'pry'
 require 'levenshtein'
+require 'json'
+require 'zlib'
 
 class Server
   def initialize(socket_port, socket_address)
@@ -10,7 +12,8 @@ class Server
       "/help"         => method(:help_command),
       "/time_now"     => method(:time_now),
       "/generate_num" => method(:generate_num),
-      "/coin_flip"    => method(:coin_flip)
+      "/coin_flip"    => method(:coin_flip),
+      "/get_file"     => method(:get_file)
     }
 
     @commands_info = {
@@ -28,6 +31,7 @@ class Server
   def run
     loop {
       client_connection = @server_socket.accept
+      puts client_connection
       Thread.start(client_connection) do |conn| # open thread for each accepted connection
         loop do
           request = conn.gets.chomp
@@ -52,22 +56,29 @@ class Server
   private
 
   def check_command(command)
+    cmd_distances = {}
     @commands.each_key do |cmd|
-      if Levenshtein.distance(command, cmd) <= 2
-        return "Undefined command '#{command}'.\nDid you mean? #{cmd}"
-      end
+      cmd_distances[cmd] = Levenshtein.distance(command, cmd)
+    end
+
+    min_distance = cmd_distances.values.sort.first
+
+    if min_distance <= 2
+      "Undefined command '#{command}'.\nDid you mean? #{cmd_distances.key(min_distance)}"
+    else
+      "Undefined command '#{command}'"
     end
   end
 
   def help_command
     result = "\n"
     @commands_info.each do |key, value|
-      result << "#{key.ljust(30)}##{value}\n"
+      result << "#{key.ljust(40)}##{value}\n"
     end
     result
   end
 
-  def hello_command(param)
+  def hello_command(param="")
     param = param.join(" ") if param.kind_of?(Array)
     "Hello #{param}"
   end
@@ -77,7 +88,7 @@ class Server
   end
 
   def generate_num(params)
-    return "Wrong number of arguments" if params.length > 2
+    return "Wrong number of arguments" if params.length != 2
     return "Incorrect parameter type" unless is_number?(params.first) and is_number?(params.last)
 
     min = params.first.to_i < params.last.to_i ? params.first.to_i : params.last.to_i
@@ -87,16 +98,17 @@ class Server
   end
 
   def coin_flip
-    result = Random.rand(2)
-    if result == 0
-      "Heads!"
-    else
-      "Tails!"
-    end
+    rand(2) == 0 ? "Heads!" : "Tails!"
   end
 
   def is_number?(string)
     true if Float(string) rescue false
+  end
+
+  def get_file
+    file = File.open('test.txt', 'rb')
+    file_name = File.basename(file)
+    "#{file_name} #{file.read}"
   end
 end
 
