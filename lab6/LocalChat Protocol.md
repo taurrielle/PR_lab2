@@ -30,3 +30,25 @@ As we can see, there are 3 parts:
 * `f230af03-9b94-4c8c-8cfb-1e53643dff8d` - unique user id of the reciever 
 * `ezp0eXBlIDpvbmxpbmUsIDp1c2VybmFtZSAiZHNsIn0=` - `{:type :online, :username "dsl"}`
 
+### 2. Message sending
+
+When a user sends a message to another user, the recieved packet looks like this:
+`1526506701192|d27cde57-3a82-4831-b79f-3e6bff168305|f230af03-9b94-4c8c-8cfb-1e53643dff8d|ezp0eXBlIDpjaGF0LCA6dHh0ICJoZWxsbyJ9`
+* `1526506701192` - time in milliseconds
+* `d27cde57-3a82-4831-b79f-3e6bff168305` - sender user unique id
+* `f230af03-9b94-4c8c-8cfb-1e53643dff8d` - reciever user unique id
+* `ezp0eXBlIDpjaGF0LCA6dHh0ICJoZWxsbyJ9` - the Base64 encoded message: `{:type :chat, :txt "hello"}`
+
+When the user recieved the message it sends another message in order to confirm delivery:
+`1526506701193|f230af03-9b94-4c8c-8cfb-1e53643dff8d|d27cde57-3a82-4831-b79f-3e6bff168305|ezp0eXBlIDpkZWxpdmVyZWR9`
+* `1526506701193` - time in milliseconds
+* `f230af03-9b94-4c8c-8cfb-1e53643dff8d` - reciever user unique id
+* `d27cde57-3a82-4831-b79f-3e6bff168305` - sender user unique id
+* `ezp0eXBlIDpkZWxpdmVyZWR9` - the Base64 encoded confirmation of delivery: `{:type :delivered}`
+
+
+
+
+
+
+
