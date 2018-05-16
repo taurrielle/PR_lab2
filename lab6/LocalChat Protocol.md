@@ -16,7 +16,9 @@ And after this, you will have to decode the Base64 string. The result must look 
 
 ### 1. New user sign in
 
-When a new user signs in a packet with data similar to the one below should be recieved. The structure of the recieved data is divided into 4 parts:
+When a new user signs in a packet with data similar to the one below should be recieved. 
+`1526506069057|f230af03-9b94-4c8c-8cfb-1e53643dff8d|:all|ezp0eXBlIDpvbmxpbmUsIDp1c2VybmFtZSAiaXJhIn0=`
+The structure of the recieved data is divided into 4 parts:
 * `1526506069057` - the time the message was sent in milliseconds (this value equals `Thu May 17 2018 00:27:49`)
 * `f230af03-9b94-4c8c-8cfb-1e53643dff8d` - unique user ID
 * `:all` -  flag that tells the program the program that the packet needs to be broadcasted in order for all the users that are connected to receive the new user name.
@@ -45,10 +47,4 @@ When the user recieved the message it sends another message in order to confirm 
 * `f230af03-9b94-4c8c-8cfb-1e53643dff8d` - reciever user unique id
 * `d27cde57-3a82-4831-b79f-3e6bff168305` - sender user unique id
 * `ezp0eXBlIDpkZWxpdmVyZWR9` - the Base64 encoded confirmation of delivery: `{:type :delivered}`
-
-
-
-
-
-
 
