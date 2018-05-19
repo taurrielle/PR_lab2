@@ -28,7 +28,7 @@ class Client
   def listen_response
     Thread.new do
       loop do
-        response = @socket.gets.chomp
+        response = @socket.readline.chomp
 
         if @file_flag
           split_response = response.split(' ', 2)
@@ -56,5 +56,14 @@ class Client
   end
 end
 
-socket = TCPSocket.open( "localhost", 2000 )
+# sockaddr = @server_socket.connect Socket.pack_sockaddr_in(socket_port, socket_address)
+
+# socket = Socket.new Socket::INET, Socket::SOCK_STREAM
+# socket.connect Socket.pack_sockaddr_in(2000, "localhost")
+
+# socket = TCPSocket.open( "localhost", 2000 )
+
+socket = Socket.new(Socket::AF_INET, Socket::SOCK_STREAM, 0)
+sockaddr = Socket.sockaddr_in(2220, 'localhost')
+socket.connect(sockaddr)
 Client.new( socket )
